@@ -1,11 +1,11 @@
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 
-export default function EditarEspecialidadScreen() {
+export default function NuevaEspecialidadScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Editar Especialidad</Text>
-      <TextInput style={styles.input} placeholder="editar la Especialidad" />
-      <Button title="Guardar" onPress={() => alert("Edicion de la Especialidad guardada")} />
+      <Text style={styles.title}>Nueva Especialidad</Text>
+      <TextInput style={styles.input} placeholder="Nombre de la Especialidad" />
+      <Button title="Guardar" onPress={() => alert("Especialidad guardada")} />
     </View>
   );
 }

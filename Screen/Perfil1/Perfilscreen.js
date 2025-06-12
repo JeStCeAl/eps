@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native';
 
-export default function DetalleEspecialidaScreen() {
+export default function DetallePacienteScreen() {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Pantalla de Detalle de la Especialidad</Text>
+            <Text>Pantalla de perfil</Text>
             {/* Aquí puedes agregar más detalles del paciente */}
         </View>
     );

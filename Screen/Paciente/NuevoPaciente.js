@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
 
-export default function EditarPacienteScreen() {
+export default function AgregarPacienteScreen() {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [cedula, setCedula] = useState("");
@@ -15,7 +15,7 @@ export default function EditarPacienteScreen() {
 
     Alert.alert(
       "Paciente registrado",
-      `${nombre} ${apellido} se han realizado los cambios exitosamente.`
+      `${nombre} ${apellido} ha sido agregado.`
     );
 
     setNombre("");
@@ -27,7 +27,7 @@ export default function EditarPacienteScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Editar Paciente</Text>
+      <Text style={styles.title}>Agregar Paciente</Text>
 
       <TextInput
         placeholder="Nombre"
@@ -63,7 +63,7 @@ export default function EditarPacienteScreen() {
         style={styles.input}
       />
 
-      <Button title="Guardar Cambios" onPress={handleSubmit} />
+      <Button title="Guardar Paciente" onPress={handleSubmit} />
     </View>
   );
 }

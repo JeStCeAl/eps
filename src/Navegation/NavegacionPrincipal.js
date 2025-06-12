@@ -1,10 +1,8 @@
-import PacientesStack from "./stacks/PacienteStack";
-import EspecialidadStack from "./stacks/EspecialidadStack";
-import DoctorStack from "./stacks/DoctorStack";
-import ConsultorioStack from "./stacks/ConsultorioStack";
-import CitaStack from "./stacks/CitaStack";
+import PerfilStack from "./stacks/Perfilstack";
+import Configuracionstack from "./stacks/ConfiguracionStack";
+import Menuincial from "./stacks/Menuinicial";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, FontAwesome, Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,47 +18,30 @@ export default function NavegacionPrincipal() {
       }}
     >
       <Tab.Screen
-        name="Paciente"
-        component={PacientesStack}
+        name="Inicio"
+        component={Menuincial}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Ionicons name="home" size={24} color="black" />
+          ),
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="perfil"
+        component={PerfilStack}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="user-plus" size={24} color="black" />
           ),
         }}
       />
       <Tab.Screen
-        name="Especialidad"
-        component={EspecialidadStack}
+        name="configuracion"
+        component={Configuracionstack}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="university" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Doctor"
-        component={DoctorStack}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="stethoscope" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Consultorio"
-        component={ConsultorioStack}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="customerservice" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Cita"
-        component={CitaStack}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="hospital-user" size={size} color={color} />
+            <Ionicons name="settings" size={24} color="black" />
           ),
         }}
       />
