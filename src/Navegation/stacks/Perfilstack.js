@@ -1,10 +1,16 @@
-import { View, Text } from 'react-native';
+import { createStackNavigator } from "@react-navigation/stack";
+import Perfil from "../../../Screen/Perfil/Perfilscreen";
 
-export default function PerfilScreen() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Pantalla de perfil</Text>
-            {/* Aquí puedes agregar más detalles del paciente */}
-        </View>
-    );
+const Stack = createStackNavigator();
+
+export default function PerfilStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Perfil"
+        component={Perfil}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
 }
