@@ -10,6 +10,7 @@ import { Button } from "react-native";
 const Stack = createStackNavigator();
 
 export default function MenuInicial() {
+  
   return (
     <Stack.Navigator initialRouteName="MenuPrincipal">
       <Stack.Screen

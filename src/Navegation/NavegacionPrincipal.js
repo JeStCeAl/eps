@@ -1,8 +1,8 @@
-import PerfilStack from "./stacks/Perfilstack";
-import Configuracionstack from "./stacks/ConfiguracionStack";
-import Menuincial from "./stacks/Menuinicial";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FontAwesome5, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign, FontAwesome5, Entypo } from "@expo/vector-icons";
+import MenuInicial from "./stacks/Menuinicial"
+import PerfilStack from "./stacks/Perfilstack";
+import ConfiguracionStack from "./stacks/ConfiguracionStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -19,29 +19,29 @@ export default function NavegacionPrincipal() {
     >
       <Tab.Screen
         name="Inicio"
-        component={Menuincial}
+        component={MenuInicial}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={24} color="black" />
+            <FontAwesome5 name="home" size={size} color={color} />
           ),
-          headerShown: false,
+          headerShown: false, // Oculta el header en esta pantalla
         }}
       />
       <Tab.Screen
-        name="perfil"
+        name="Perfil"
         component={PerfilStack}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="user-plus" size={24} color="black" />
+            <Entypo name="user" size={size} color={color} />
           ),
         }}
       />
       <Tab.Screen
-        name="configuracion"
-        component={Configuracionstack}
+        name="Configuración"
+        component={ConfiguracionStack}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" size={24} color="black" />
+            <AntDesign name="setting" size={size} color={color} />
           ),
         }}
       />

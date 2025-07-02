@@ -14,9 +14,34 @@ export default function CardComponent({
   return (
     <View style={styles.card}>
       <View style={styles.infoContainer}>
-        <Text style={styles.name}>{item.nombre}</Text>
-        <Text style={styles.detail}>Edad: {item.edad} años</Text>
-        <Text style={styles.detail}>Tel: {item.telefono}</Text>
+        {/* Título principal: nombre, paciente o vacío */}
+        <Text style={styles.name}>
+          {item.nombre || item.paciente || "Sin nombre"}
+        </Text>
+
+        {/* Campos para especialidades */}
+        {item.descripcion && (
+          <Text style={styles.detail}>Descripción: {item.descripcion}</Text>
+        )}
+        {item.duracion && (
+          <Text style={styles.detail}>Duración: {item.duracion}</Text>
+        )}
+
+        {/* Campos para pacientes */}
+        {item.edad !== undefined && (
+          <Text style={styles.detail}>Edad: {item.edad} años</Text>
+        )}
+        {item.telefono && (
+          <Text style={styles.detail}>Teléfono: {item.telefono}</Text>
+        )}
+
+        {/* Campos para citas */}
+        {item.fecha && (
+          <Text style={styles.detail}>Fecha: {item.fecha}</Text>
+        )}
+        {item.hora && (
+          <Text style={styles.detail}>Hora: {item.hora}</Text>
+        )}
       </View>
 
       {showActions && (
@@ -52,7 +77,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -75,9 +100,10 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: "row",
+    marginTop: 5,
   },
   actionButton: {
-    marginLeft: 15,
+    marginLeft: 10,
     padding: 8,
   },
 });

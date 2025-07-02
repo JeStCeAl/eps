@@ -10,30 +10,34 @@ import { Ionicons } from "@expo/vector-icons";
 import CardComponent from "../../Components/CardComponent";
 
 export default function ListarEspecialidadScreen({ navigation }) {
-  const pacientes = [
-    { id: 1, nombre: "Juan Pérez", edad: 35, telefono: "555-1234" },
-    { id: 2, nombre: "María García", edad: 28, telefono: "555-5678" },
-    { id: 3, nombre: "Carlos López", edad: 42, telefono: "555-9012" },
+  const especialidades = [
+    { id: 1, nombre: "Cardiología", descripcion: "Trata enfermedades del corazón", duracion: "3 años" },
+    { id: 2, nombre: "Dermatología", descripcion: "Enfocada en la piel", duracion: "2 años" },
+    { id: 3, nombre: "Pediatría", descripcion: "Cuidado de niños y adolescentes", duracion: "3 años" },
   ];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Listado de Pacientes</Text>
+      <Text style={styles.title}>Listado de Especialidades</Text>
 
       <ScrollView style={styles.listContainer}>
-        {pacientes.map((paciente) => (
+        {especialidades.map((especialidad) => (
           <CardComponent
-            key={paciente.id}
-            item={paciente}
-            onView={() => navigation.navigate("DetalleEspecialidad", { paciente })}
-            onEdit={() => navigation.navigate("EditarEspecialidad", { paciente })}
+            key={especialidad.id}
+            item={especialidad}
+            onView={() =>
+              navigation.navigate("DetalleEspecialidad", { especialidad })
+            }
+            onEdit={() =>
+              navigation.navigate("EditarEspecialidad", { especialidad })
+            }
           />
         ))}
       </ScrollView>
 
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate("NuevoEspecialidad")}
+        onPress={() => navigation.navigate("NuevaEspecialidad")}
       >
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>

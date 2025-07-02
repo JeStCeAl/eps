@@ -11,7 +11,7 @@ import CardComponent from "../../Components/CardComponent";
 
 export default function ListarPacienteScreen({ navigation }) {
   const pacientes = [
-    { id: 1, nombre: "Juan Pérez", edad: 35, telefono: "555-1234" },
+    { id: 1, nombre: "Juan Pérez", edad: 36, telefono: "555-1234" },
     { id: 2, nombre: "María García", edad: 28, telefono: "555-5678" },
     { id: 3, nombre: "Carlos López", edad: 42, telefono: "555-9012" },
   ];
