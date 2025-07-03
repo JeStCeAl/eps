@@ -16,16 +16,6 @@ export default function MenuInicial() {
       <Stack.Screen
         name="MenuPrincipal"
         component={MenuScreen}
-        options={{
-          // Oculta el header en esta pantalla
-          headerRight: () => (
-            <Button
-              onPress={() => alert("!Boton en el header!")}
-              title="Cerrar Sesión"
-              color="red"
-            />
-          ),
-        }}
       />
       <Stack.Screen
         name="PacienteStack"

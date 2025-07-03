@@ -14,33 +14,36 @@ export default function CardComponent({
   return (
     <View style={styles.card}>
       <View style={styles.infoContainer}>
-        {/* Título principal: nombre, paciente o vacío */}
-        <Text style={styles.name}>
-          {item.nombre || item.paciente || "Sin nombre"}
-        </Text>
+        {/* Título principal */}
+        <Text style={styles.name}>Nombre: {item.nombre}</Text>
 
-        {/* Campos para especialidades */}
+        {/* Mostrar campos si existen */}
         {item.descripcion && (
           <Text style={styles.detail}>Descripción: {item.descripcion}</Text>
         )}
         {item.duracion && (
           <Text style={styles.detail}>Duración: {item.duracion}</Text>
         )}
-
-        {/* Campos para pacientes */}
         {item.edad !== undefined && (
           <Text style={styles.detail}>Edad: {item.edad} años</Text>
         )}
         {item.telefono && (
           <Text style={styles.detail}>Teléfono: {item.telefono}</Text>
         )}
-
-        {/* Campos para citas */}
         {item.fecha && (
-          <Text style={styles.detail}>Fecha: {item.fecha}</Text>
+          <Text style={styles.name}>Fecha: {item.fecha}</Text>
         )}
         {item.hora && (
           <Text style={styles.detail}>Hora: {item.hora}</Text>
+        )}
+        {item.especialidad && (
+          <Text style={styles.detail}>Especialidad: {item.especialidad}</Text>
+        )}
+        {item.piso && (
+          <Text style={styles.detail}>Piso: {item.piso}</Text>
+        )}
+        {item.numero && (
+          <Text style={styles.detail}>Numero habitación: {item.numero}</Text>
         )}
       </View>
 
