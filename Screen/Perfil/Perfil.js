@@ -4,6 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottonComponent from "../../Components/BotonComponent";
 import api from "../../src/Services/conexion";
 import { logoutUser } from "../../src/Services/AuthService";
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function PerfilScreen({ navigation }) {
   const [usuario, setUsuario] = useState(null);
@@ -109,15 +111,9 @@ export default function PerfilScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Perfil de Usuario</Text>
       <View style={styles.ContainerPerfil}>
-        <Text style={styles.profileText}>
-          Nombre: {usuario.user.name || "no disponible"}
-        </Text>
-        <Text style={styles.profileText}>
-          Correo Electrónico: {usuario.user.email || "no disponible"}
-        </Text>
-        <Text style={styles.profileText}>
-          Role: {usuario.user.role || "no disponible"}
-        </Text>
+        <Text style={styles.profileText}>Nombre: {usuario.user.name || "no disponible"}</Text>
+        <Text style={styles.profileText}>Correo Electrónico: {usuario.user.email || "no disponible"}</Text>
+        <Text style={styles.profileText}>Role: {usuario.user.role || "no disponible"}</Text>
 
         <BottonComponent title="Editar Perfil" onPress={() => {}} />
         <BottonComponent

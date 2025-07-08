@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -5,57 +6,131 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { crearDoctor, editarDoctor } from "../../src/Services/ActividadService";
 
-export default function EditarConsultorioScreen({ navigation, route }) {
-  const { consultorio } = route.params || {};
+export default function EditarDoctor() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const doctor = route.params?.doctor;
+
+  // Estados para los campos del doctor
+  const [nombre, setNombre] = useState(doctor?.nombre || "");
+  const [edad, setEdad] = useState(doctor?.edad ? String(doctor.edad) : "");
+  const [telefono, setTelefono] = useState(doctor?.telefono || "");
+  const [especialidad, setEspecialidad] = useState(doctor?.especialidad || "");
+  const [loading, setLoading] = useState(false);
+
+  const esEdicion = !!doctor;
+
+  const handleGuardar = async () => {
+    // Validación de campos requeridos
+    if (!nombre || !especialidad) {
+      Alert.alert("Error", "Por favor completa los campos obligatorios");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      let result;
+      const datosDoctor = {
+        nombre,
+        edad: edad ? parseInt(edad) : null,
+        telefono,
+        especialidad,
+      };
+
+      if (esEdicion) {
+        result = await editarDoctor(doctor.id, datosDoctor);
+      } else {
+        result = await crearDoctor(datosDoctor);
+      }
+
+      if (result.success) {
+        Alert.alert(
+          "Éxito",
+          `Dr. ${nombre} se ha ${
+            esEdicion ? "editado" : "registrado"
+          } correctamente`
+        );
+        navigation.goBack();
+      } else {
+        Alert.alert("Error", result.message || "No se pudo guardar el doctor");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Ocurrió un error al guardar el doctor");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Editar Consultorio</Text>
+      <Text style={styles.title}>
+        {esEdicion ? "Editar Doctor" : "Nuevo Doctor"}
+      </Text>
 
+      {/* Campos del formulario */}
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Nombre Doc</Text>
+        <Text style={styles.label}>Nombre completo*</Text>
         <TextInput
           style={styles.input}
-          placeholder="Nombre del Doctor"
-          defaultValue={consultorio?.nombre}
+          value={nombre}
+          onChangeText={setNombre}
+          placeholder="Ej: Juan Pérez"
         />
       </View>
 
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Piso Consultorio</Text>
+        <Text style={styles.label}>Edad</Text>
         <TextInput
-          style={[styles.input, styles.multilineInput]}
-          placeholder="Descripción"
-          multiline
-          numberOfLines={4}
-          defaultValue={consultorio?.piso}
+          style={styles.input}
+          value={edad}
+          onChangeText={setEdad}
+          placeholder="Ej: 35"
+          keyboardType="numeric"
         />
       </View>
 
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Numero del Consultorio</Text>
+        <Text style={styles.label}>Teléfono</Text>
         <TextInput
           style={styles.input}
-          placeholder="Duración (ej: 101)"
-          defaultValue={consultorio?.numero}
+          value={telefono}
+          onChangeText={setTelefono}
+          placeholder="Ej: 555-1234"
+          keyboardType="phone-pad"
+        />
+      </View>
+
+      <View style={styles.formGroup}>
+        <Text style={styles.label}>Especialidad*</Text>
+        <TextInput
+          style={styles.input}
+          value={especialidad}
+          onChangeText={setEspecialidad}
+          placeholder="Ej: Cardiología"
         />
       </View>
 
       <TouchableOpacity
         style={styles.saveButton}
-        onPress={() => alert("Consultorio guardado")}
+        onPress={handleGuardar}
+        disabled={loading}
       >
-        <Text style={styles.saveButtonText}>Guardar Cambios</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.cancelButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.cancelButtonText}>Cancelar</Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.saveButtonText}>
+            {esEdicion ? "Guardar Cambios" : "Registrar Doctor"}
+          </Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );
@@ -83,6 +158,9 @@ const styles = StyleSheet.create({
     color: "#444",
     marginBottom: 8,
   },
+  requiredLabel: {
+    color: "red",
+  },
   input: {
     backgroundColor: "white",
     height: 50,
@@ -96,11 +174,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
-  },
-  multilineInput: {
-    height: 120,
-    textAlignVertical: "top",
-    paddingTop: 15,
   },
   saveButton: {
     backgroundColor: "#1976D2",
@@ -118,19 +191,5 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
-  },
-  cancelButton: {
-    backgroundColor: "#f5f5f5",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 15,
-    borderWidth: 1,
-    borderColor: "#ccc",
-  },
-  cancelButtonText: {
-    color: "#666",
-    fontSize: 18,
-    fontWeight: "600",
   },
 });

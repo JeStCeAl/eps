@@ -1,5 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons, FontAwesome, Fontisto } from "react-native-vector-icons";
 import Card from "../../Components/DetalleComponent";
 

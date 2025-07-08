@@ -4,51 +4,55 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import CardComponent from "../../Components/CardComponent";
+import CardComponent from "../../Components/DoctorComponent";
 
-export default function ListarDoctorScreen({ navigation }) {
-  const doctores = [
-    { 
-      id: 1, 
-      nombre: "Juan Pérez", 
-      edad: 35, 
-      telefono: "555-1234",
-      especialidad: "Cardiología",
-     
-    },
-    { 
-      id: 2, 
-      nombre: "María García", 
-      edad: 28, 
-      telefono: "555-5678",
-      especialidad: "Dermatología",
-     
-    },
-    { 
-      id: 3, 
-      nombre: "Carlos López", 
-      edad: 42, 
-      telefono: "555-9012",
-      especialidad: "Pediatría",
-     
-    },
-  ];
+export default function ListarDoctor({ navigation }) {
+  // Datos vacíos como solicitaste
+  const doctores = [];
+
+  // Estado para simular carga de datos
+  const [loading, setLoading] = React.useState(false);
+
+  // Manejo seguro de navegación
+  const handleNavigate = (screen, data = {}) => {
+    if (!data) {
+      console.warn(`Datos no definidos para ${screen}`);
+      data = { nombre: "No definido", especialidad: "No definida" };
+    }
+    navigation.navigate(screen, { doctor: data });
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.center]}>
+        <ActivityIndicator size="large" color="#1976D2" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Listado de Doctores</Text>
 
       <ScrollView style={styles.listContainer}>
-        {doctores.map((doctores) => (
-          <CardComponent
-            key={doctores.id}
-            item={doctores}
-            onView={() => navigation.navigate("DetalleDoctor", { doctores })}
-            onEdit={() => navigation.navigate("EditarDoctor", { doctores })}
-          />
-        ))}
+        {doctores.length > 0 ? (
+          doctores.map((doctor) => (
+            <CardComponent
+              key={doctor.id}
+              item={doctor}
+              onView={() => handleNavigate("DetalleDoctor", doctor)}
+              onEdit={() => handleNavigate("EditarDoctor", doctor)}
+            />
+          ))
+        ) : (
+          <Text style={styles.emptyText}>
+            No hay doctores registrados actualmente
+          </Text>
+        )}
       </ScrollView>
 
       <TouchableOpacity
@@ -67,6 +71,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     padding: 15,
   },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -76,6 +84,12 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
+  },
+  emptyText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "#666",
   },
   addButton: {
     position: "absolute",

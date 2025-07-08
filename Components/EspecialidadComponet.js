@@ -1,30 +1,25 @@
 // Components/CardComponent.js
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons, AntDesign } from '@expo/vector-icons';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 
-export default function CardComponent({ 
-  item, 
-  onView, 
+export default function CardComponent({
+  item,
+  onView,
   onEdit,
-  onDelete, 
-  viewIcon = "eye", 
+  onDelete,
+  viewIcon = "eye",
   editIcon = "create",
-  paciente,
-  showActions = true 
+  especialidad,
+  showActions = true,
 }) {
   return (
     <View style={styles.card}>
       <View style={styles.infoContainer}>
-        {/* Título principal */}
-        <Text style={styles.name}>Nombre: {paciente.nombre}</Text>
-        <Text style={styles.name}>Apellido: {paciente.apellido}</Text>
-        <Text style={styles.detail}>Documento: {paciente.documento}</Text>
-        <Text style={styles.detail}>Telefono: {paciente.telefono}</Text>
-        <Text style={styles.detail}>Email: {paciente.email}</Text>
-        
-
-
+        {/* especialidades */}
+        <Text style={styles.name}>
+          Nombre Especialidad: {especialidad.nombre}
+        </Text>
 
         {/* Mostrar campos si existen */}
         {/* {item.descripcion && (
@@ -59,28 +54,19 @@ export default function CardComponent({
       {showActions && (
         <View style={styles.actionsContainer}>
           {onView && (
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={onView}
-            >
+            <TouchableOpacity style={styles.actionButton} onPress={onView}>
               <Ionicons name={viewIcon} size={20} color="#1976D2" />
             </TouchableOpacity>
           )}
-          
+
           {onEdit && (
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={onEdit}
-            >
+            <TouchableOpacity style={styles.actionButton} onPress={onEdit}>
               <Ionicons name={editIcon} size={20} color="#FFA000" />
             </TouchableOpacity>
           )}
 
           {onDelete && (
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={onDelete}
-            >
+            <TouchableOpacity style={styles.actionButton} onPress={onDelete}>
               <AntDesign name="delete" size={20} color="red" />
             </TouchableOpacity>
           )}

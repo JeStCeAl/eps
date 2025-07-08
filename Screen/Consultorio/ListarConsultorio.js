@@ -3,42 +3,118 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  ActivityIndicator,
+  FlatList,
+  Alert,
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import CardComponent from "../../Components/CardComponent";
+import { useNavigation } from "@react-navigation/native";
+import {
+  listarDoctor,
+  eliminarDoctor,
+} from "../../src/Services/ActividadService";
 
-export default function ListarConsultorioScreen({ navigation }) {
-  const consultorio = [
-    { id: 1, nombre: "Juan Pérez", piso: "5", numero: "101" },
-    { id: 2, nombre: "María García", piso: "6", numero: "301" },
-    { id: 3, nombre: "Carlos López", piso: "2", numero: "100" },
-  ];
+export default function ListarDoctor() {
+  const [doctores, setDoctores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+
+  const obtenerDoctores = async () => {
+    setLoading(true);
+    try {
+      const result = await listarDoctor();
+      if (result.success) {
+        setDoctores(result.data);
+      } else {
+        Alert.alert(
+          "Error",
+          result.message || "No se pudieron obtener los doctores"
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió un error al obtener los doctores");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", obtenerDoctores);
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleEditar = (doctor) => {
+    navigation.navigate("EditarDoctor", { doctor });
+  };
+
+  const handleCrear = () => {
+    navigation.navigate("EditarDoctor");
+  };
+
+  const handleView = (doctor) => {
+    navigation.navigate("DetalleDoctor", { doctores: doctor });
+  };
+
+  const handleEliminar = (id) => {
+    Alert.alert("Eliminar Doctor", "¿Estás seguro de eliminar este doctor?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const result = await eliminarDoctor(id);
+            if (result.success) {
+              obtenerDoctores();
+            } else {
+              Alert.alert(
+                "Error",
+                result.message || "No se pudo eliminar el doctor"
+              );
+            }
+          } catch (error) {
+            Alert.alert("Error", "No se pudo eliminar el doctor");
+          }
+        },
+      },
+    ]);
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#1976D2" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Listado de Consultorios</Text>
+      <Text style={styles.title}>Listado de Doctores</Text>
 
-      <ScrollView style={styles.listContainer}>
-        {consultorio.map((consultorio) => (
-          <CardComponent
-            key={consultorio.id}
-            item={consultorio}
-            onView={() =>
-              navigation.navigate("DetalleConsultorio", { consultorio })
-            }
-            onEdit={() =>
-              navigation.navigate("EditarConsultorio", { consultorio })
-            }
-          />
-        ))}
-      </ScrollView>
+      {doctores.length > 0 ? (
+        <FlatList
+          style={styles.listContainer}
+          data={doctores}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <CardComponent
+              doctor={item}
+              onDelete={() => handleEliminar(item.id)}
+              onEdit={() => handleEditar(item)}
+              onView={() => handleView(item)}
+            />
+          )}
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text>No hay doctores registrados</Text>
+        </View>
+      )}
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate("NuevoConsultorio")}
-      >
+      <TouchableOpacity style={styles.addButton} onPress={handleCrear}>
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
     </View>
@@ -76,5 +152,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    marginTop: 50,
   },
 });
