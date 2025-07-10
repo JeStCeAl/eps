@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {
   View,
   Text,
@@ -7,30 +7,30 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  FlatList,
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { crearDoctor, editarDoctor } from "../../src/Services/ActividadService";
+import {
+  crearConsultorio,
+  editarConsultorio,
+} from "../../src/Services/ConsultorioService";
 
-export default function EditarDoctor() {
+export default function EditarConsultorioScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const doctor = route.params?.doctor;
+  const consultorio = route.params?.consultorio;
 
-  // Estados para los campos del doctor
-  const [nombre, setNombre] = useState(doctor?.nombre || "");
-  const [edad, setEdad] = useState(doctor?.edad ? String(doctor.edad) : "");
-  const [telefono, setTelefono] = useState(doctor?.telefono || "");
-  const [especialidad, setEspecialidad] = useState(doctor?.especialidad || "");
+  const [numero, setNumero] = useState(consultorio?.numero || "");
+  const [piso, setPiso] = useState(consultorio?.piso || "");
   const [loading, setLoading] = useState(false);
 
-  const esEdicion = !!doctor;
+  const esEdicion = !!consultorio;
 
   const handleGuardar = async () => {
-    // Validación de campos requeridos
-    if (!nombre || !especialidad) {
-      Alert.alert("Error", "Por favor completa los campos obligatorios");
+    if ((!numero, !piso)) {
+      Alert.alert("Error", "Por favor completa todos los campos");
       return;
     }
 
@@ -38,33 +38,34 @@ export default function EditarDoctor() {
 
     try {
       let result;
-      const datosDoctor = {
-        nombre,
-        edad: edad ? parseInt(edad) : null,
-        telefono,
-        especialidad,
-      };
-
       if (esEdicion) {
-        result = await editarDoctor(doctor.id, datosDoctor);
+        result = await editarConsultorio(consultorio.id, {
+          numero,
+          piso,
+        });
       } else {
-        result = await crearDoctor(datosDoctor);
+        result = await crearConsultorio({
+          numero,
+          piso,
+        });
       }
 
       if (result.success) {
         Alert.alert(
           "Éxito",
-          `Dr. ${nombre} se ha ${
+          `${piso}  se ha ${
             esEdicion ? "editado" : "registrado"
           } correctamente`
         );
         navigation.goBack();
       } else {
-        Alert.alert("Error", result.message || "No se pudo guardar el doctor");
+        Alert.alert(
+          "Error",
+          result.message || "No se pudo guardar el consultorio"
+        );
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Ocurrió un error al guardar el doctor");
+      Alert.alert("Error", "Ocurrió un error al guardar el consultorio");
     } finally {
       setLoading(false);
     }
@@ -73,49 +74,26 @@ export default function EditarDoctor() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
-        {esEdicion ? "Editar Doctor" : "Nuevo Doctor"}
+        {esEdicion ? "Editar Especilidad" : "Nueva Especialidad"}
       </Text>
 
-      {/* Campos del formulario */}
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Nombre completo*</Text>
+        <Text style={styles.label}>Numero del Consultorio</Text>
         <TextInput
           style={styles.input}
-          value={nombre}
-          onChangeText={setNombre}
-          placeholder="Ej: Juan Pérez"
+          value={numero}
+          onChangeText={setNumero}
+          placeholder="Numero del Consultorio"
         />
       </View>
 
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Edad</Text>
+        <Text style={styles.label}>Piso Consultorio</Text>
         <TextInput
-          style={styles.input}
-          value={edad}
-          onChangeText={setEdad}
-          placeholder="Ej: 35"
-          keyboardType="numeric"
-        />
-      </View>
-
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Teléfono</Text>
-        <TextInput
-          style={styles.input}
-          value={telefono}
-          onChangeText={setTelefono}
-          placeholder="Ej: 555-1234"
-          keyboardType="phone-pad"
-        />
-      </View>
-
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Especialidad*</Text>
-        <TextInput
-          style={styles.input}
-          value={especialidad}
-          onChangeText={setEspecialidad}
-          placeholder="Ej: Cardiología"
+          style={[styles.input, styles.multilineInput]}
+          value={piso}
+          onChangeText={setPiso}
+          placeholder="Piso Consultorio"
         />
       </View>
 
@@ -128,7 +106,7 @@ export default function EditarDoctor() {
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.saveButtonText}>
-            {esEdicion ? "Guardar Cambios" : "Registrar Doctor"}
+            {esEdicion ? "Guardar Cambios" : "Registrar Especialidad"}
           </Text>
         )}
       </TouchableOpacity>
@@ -158,9 +136,6 @@ const styles = StyleSheet.create({
     color: "#444",
     marginBottom: 8,
   },
-  requiredLabel: {
-    color: "red",
-  },
   input: {
     backgroundColor: "white",
     height: 50,
@@ -174,6 +149,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+  },
+  multilineInput: {
+    height: 120,
+    textAlignVertical: "top",
+    paddingTop: 15,
   },
   saveButton: {
     backgroundColor: "#1976D2",

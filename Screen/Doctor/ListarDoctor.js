@@ -4,61 +4,114 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import CardComponent from "../../Components/DoctorComponent";
+import DoctorComponent from "../../Components/DoctorComponent";
+import { useNavigation } from "@react-navigation/native";
+import {
+  listarDoctor,
+  eliminarDoctor,
+} from "../../src/Services/DoctorService";
 
-export default function ListarDoctor({ navigation }) {
-  // Datos vacíos como solicitaste
-  const doctores = [];
+export default function ListarDoctorScreen() {
+  const [doctor, setDoctor] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
-  // Estado para simular carga de datos
-  const [loading, setLoading] = React.useState(false);
-
-  // Manejo seguro de navegación
-  const handleNavigate = (screen, data = {}) => {
-    if (!data) {
-      console.warn(`Datos no definidos para ${screen}`);
-      data = { nombre: "No definido", especialidad: "No definida" };
+  const handleDoctores = async () => {
+    setLoading(true);
+    try {
+      const result = await listarDoctor();
+      if (result.success) {
+        setDoctor(result.data);
+      } else {
+        Alert.alert(
+          "Error",
+          result.message || "No se pudieron obtener los doctores"
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "No se pudieron cargar los doctores");
+    } finally {
+      setLoading(false);
     }
-    navigation.navigate(screen, { doctor: data });
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", handleDoctores);
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleEditar = (doctor) => {
+    navigation.navigate("EditarDoctor", { doctor });
+  };
+
+  const handleCrear = () => {
+    navigation.navigate("EditarDoctor");
+  };
+  const handleView = (doctor) => {
+    navigation.navigate("DetalleDoctor", { doctor });
+  };
+  const handleEliminar = (id) => {
+    // Implement delete functionality
+    Alert.alert("Eliminar Doctor", "¿Estas seguro de eliminar este doctor?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const result = await eliminarDoctor(id);
+            if (result.success) {
+              // setPacientes(pacientes.filter((p) => p.id !== id));
+              // otra funcion para listar
+              handlePacientes();
+            } else {
+              Alert.alert("Error", result.message || "No se pudo eliminar el ");
+            }
+          } catch (error) {
+            Alert.alert("Error", "No se pudo eliminar el doctor");
+          }
+        },
+      },
+    ]);
   };
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" color="#1976D2" />
       </View>
     );
   }
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Listado de Doctores</Text>
 
-      <ScrollView style={styles.listContainer}>
-        {doctores.length > 0 ? (
-          doctores.map((doctor) => (
-            <CardComponent
-              key={doctor.id}
-              item={doctor}
-              onView={() => handleNavigate("DetalleDoctor", doctor)}
-              onEdit={() => handleNavigate("EditarDoctor", doctor)}
+      {doctor.length > 0 ? (
+        <FlatList
+          style={styles.listContainer}
+          data={doctor}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <DoctorComponent
+              doctor={item}
+              onDelete={() => handleEliminar(item.id)}
+              onEdit={() => handleEditar(item)}
+              onView={() => handleView(item)}
             />
-          ))
-        ) : (
-          <Text style={styles.emptyText}>
-            No hay doctores registrados actualmente
-          </Text>
-        )}
-      </ScrollView>
-
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate("NuevoDoctor")}
-      >
+          )}
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text>No hay pacientes registrados</Text>
+        </View>
+      )}
+      <TouchableOpacity style={styles.addButton} onPress={handleCrear}>
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
     </View>
@@ -71,10 +124,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     padding: 15,
   },
-  center: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -84,12 +133,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 16,
-    color: "#666",
   },
   addButton: {
     position: "absolute",

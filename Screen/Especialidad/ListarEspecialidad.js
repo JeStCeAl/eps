@@ -12,7 +12,7 @@ import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import EspecialidadComponent from "../../Components/EspecialidadComponet";
 import { useNavigation } from "@react-navigation/native";
-import { listarEspecialidad, eliminarEspecialidad } from "../../src/Services/ActividadService";
+import { listarEspecialidad, eliminarEspecialidad } from "../../src/Services/EspecialidadService";
 
 export default function ListarEspecialidadScreen() {
   const [especialidad, setEspecialdad] = useState([]);

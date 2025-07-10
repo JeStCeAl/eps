@@ -1,73 +1,66 @@
-// Components/CardComponent.js
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 
-export default function CardComponent({
-  item,
-  onView,
+export default function CardComponent({ 
+  item, 
+  onView, 
   onEdit,
-  onDelete,
-  viewIcon = "eye",
+  onDelete, 
+  viewIcon = "eye", 
   editIcon = "create",
   consultorio,
-  showActions = true,
+  showActions = true 
 }) {
+  // Usamos consultorio o item como fuente de datos
+  const datosConsultorio = consultorio || item;
+
   return (
     <View style={styles.card}>
       <View style={styles.infoContainer}>
-        {/* especialidades */}
-        <Text style={styles.name}>Nombre Especialidad: {consultorio.piso}</Text>
-        <Text style={styles.name}>
-          Nombre Especialidad: {consultorio.numero}
-        </Text>
+        {/* Mostramos los datos del consultorio con validación */}
+        {datosConsultorio?.piso && (
+          <Text style={styles.name}>Número del consultorio: {datosConsultorio.piso}</Text>
+        )}
+        
+        {datosConsultorio?.numero && (
+          <Text style={styles.name}>Número del piso consultorio: {datosConsultorio.numero}</Text>
+        )}
 
-        {/* Mostrar campos si existen */}
-        {/* {item.descripcion && (
-          <Text style={styles.detail}>Descripción: {item.descripcion}</Text>
+        {/* Mantenemos los otros campos comentados por si los necesitas */}
+        {/* {datosConsultorio?.descripcion && (
+          <Text style={styles.detail}>Descripción: {datosConsultorio.descripcion}</Text>
         )}
-        {item.duracion && (
-          <Text style={styles.detail}>Duración: {item.duracion}</Text>
-        )}
-        {item.edad !== undefined && (
-          <Text style={styles.detail}>Edad: {item.edad} años</Text>
-        )}
-        {item.telefono && (
-          <Text style={styles.detail}>Teléfono: {item.telefono}</Text>
-        )}
-        {item.fecha && (
-          <Text style={styles.name}>Fecha: {item.fecha}</Text>
-        )}
-        {item.hora && (
-          <Text style={styles.detail}>Hora: {item.hora}</Text>
-        )}
-        {item.especialidad && (
-          <Text style={styles.detail}>Especialidad: {item.especialidad}</Text>
-        )}
-        {item.piso && (
-          <Text style={styles.detail}>Piso: {item.piso}</Text>
-        )}
-        {item.numero && (
-          <Text style={styles.detail}>Numero habitación: {item.numero}</Text>
+        {datosConsultorio?.especialidad && (
+          <Text style={styles.detail}>Especialidad: {datosConsultorio.especialidad}</Text>
         )} */}
       </View>
 
       {showActions && (
         <View style={styles.actionsContainer}>
           {onView && (
-            <TouchableOpacity style={styles.actionButton} onPress={onView}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={onView}
+            >
               <Ionicons name={viewIcon} size={20} color="#1976D2" />
             </TouchableOpacity>
           )}
-
+          
           {onEdit && (
-            <TouchableOpacity style={styles.actionButton} onPress={onEdit}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={onEdit}
+            >
               <Ionicons name={editIcon} size={20} color="#FFA000" />
             </TouchableOpacity>
           )}
 
           {onDelete && (
-            <TouchableOpacity style={styles.actionButton} onPress={onDelete}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={onDelete}
+            >
               <AntDesign name="delete" size={20} color="red" />
             </TouchableOpacity>
           )}
@@ -77,6 +70,7 @@ export default function CardComponent({
   );
 }
 
+// Mantenemos EXACTAMENTE los mismos estilos que tenías originalmente
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "white",

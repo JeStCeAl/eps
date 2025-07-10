@@ -1,53 +1,27 @@
-// Components/CardComponent.js
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 
-export default function CardComponent({
-  item,
-  onView,
+export default function CardComponent({ 
+  item, 
+  onView, 
   onEdit,
-  onDelete,
-  viewIcon = "eye",
+  onDelete, 
+  viewIcon = "eye", 
   editIcon = "create",
-  cita,
-  showActions = true,
+  showActions = true 
 }) {
+  if (!item) return null;
+
   return (
     <View style={styles.card}>
       <View style={styles.infoContainer}>
-        {/* especialidades */}
-        <Text style={styles.name}>Nombre Cita: {cita.piso}</Text>
-        <Text style={styles.name}>Nombre Cita: {cita.numero}</Text>
+        <Text style={styles.name}>Fecha: {item.fecha}</Text>
+        <Text style={styles.detail}>Hora: {item.hora}</Text>
 
-        {/* Mostrar campos si existen */}
-        {/* {item.descripcion && (
-          <Text style={styles.detail}>Descripción: {item.descripcion}</Text>
-        )}
-        {item.duracion && (
-          <Text style={styles.detail}>Duración: {item.duracion}</Text>
-        )}
-        {item.edad !== undefined && (
-          <Text style={styles.detail}>Edad: {item.edad} años</Text>
-        )}
-        {item.telefono && (
-          <Text style={styles.detail}>Teléfono: {item.telefono}</Text>
-        )}
-        {item.fecha && (
-          <Text style={styles.name}>Fecha: {item.fecha}</Text>
-        )}
-        {item.hora && (
-          <Text style={styles.detail}>Hora: {item.hora}</Text>
-        )}
-        {item.especialidad && (
-          <Text style={styles.detail}>Especialidad: {item.especialidad}</Text>
-        )}
-        {item.piso && (
-          <Text style={styles.detail}>Piso: {item.piso}</Text>
-        )}
-        {item.numero && (
-          <Text style={styles.detail}>Numero habitación: {item.numero}</Text>
-        )} */}
+        {/* Puedes agregar más detalles si los tienes disponibles */}
+        {/* <Text style={styles.detail}>Doctor: {item.doctor?.nombre}</Text> */}
+        {/* <Text style={styles.detail}>Paciente: {item.paciente?.nombre}</Text> */}
       </View>
 
       {showActions && (
