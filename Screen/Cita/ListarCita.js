@@ -3,24 +3,25 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
-  FlatList,
   Alert,
+  FlatList,
   ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import CardComponent from "../../Components/CitasComponent";
+import CitasComponent from "../../Components/CitasComponent";
 import { useNavigation } from "@react-navigation/native";
-import { listarCita, eliminarCita } from "../../src/Services/CitasService";
+import {
+  listarCita,
+  eliminarCita,
+} from "../../src/Services/CitasService";
 
-
-export default function ListarCita() {
+export default function ListarCitaScreen() {
   const [citas, setCitas] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
-  const handleCitas = async () => {
+  const cargarCitas = async () => {
     setLoading(true);
     try {
       const result = await listarCita();
@@ -40,56 +41,51 @@ export default function ListarCita() {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", handleCitas);
+    const unsubscribe = navigation.addListener("focus", cargarCitas);
     return unsubscribe;
   }, [navigation]);
 
   const handleEditar = (cita) => {
     navigation.navigate("EditarCita", { cita });
   };
+
   const handleCrear = () => {
     navigation.navigate("EditarCita");
   };
+
   const handleView = (cita) => {
     navigation.navigate("DetalleCita", { cita });
   };
 
   const handleEliminar = (id) => {
-    Alert.alert(
-      "Eliminar Cita",
-      "¿Estás seguro de que deseas eliminar esta cita?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Eliminar",
-          onPress: async () => {
-            try {
-              const result = await eliminarCita(id);
-              if (result.success) {
-                setCitas(citas.filter((cita) => cita.id !== id));
-                Alert.alert("Éxito", "Cita eliminada correctamente");
-              } else {
-                Alert.alert(
-                  "Error",
-                  result.message || "No se pudo eliminar la cita"
-                );
-              }
-            } catch (error) {
-              Alert.alert("Error", "No se pudo eliminar la cita");
+    Alert.alert("Eliminar Cita", "¿Estás seguro de eliminar esta cita?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const result = await eliminarCita(id);
+            if (result.success) {
+              setCitas((prev) => prev.filter((c) => c.id !== id));
+            } else {
+              Alert.alert(
+                "Error",
+                result.message || "No se pudo eliminar la cita"
+              );
             }
-          },
+          } catch (error) {
+            Alert.alert("Error", "No se pudo eliminar la cita");
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Cargando citas...</Text>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#1976D2" />
       </View>
     );
   }
@@ -104,24 +100,22 @@ export default function ListarCita() {
           data={citas}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <CardComponent
+            <CitasComponent
+              item={item}
               cita={item}
-              onEdit={() => handleEditar(item)}
               onDelete={() => handleEliminar(item.id)}
+              onEdit={() => handleEditar(item)}
               onView={() => handleView(item)}
             />
           )}
         />
       ) : (
         <View style={styles.emptyContainer}>
-          <Text>No hay Citas registrados</Text>
+          <Text>No hay citas registradas</Text>
         </View>
       )}
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={handleCrear}
-      >
+      <TouchableOpacity style={styles.addButton} onPress={handleCrear}>
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
     </View>
@@ -143,6 +137,15 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   addButton: {
     position: "absolute",

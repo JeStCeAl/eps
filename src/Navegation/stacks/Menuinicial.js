@@ -10,12 +10,12 @@ import { Button } from "react-native";
 const Stack = createStackNavigator();
 
 export default function MenuInicial() {
-  
   return (
     <Stack.Navigator initialRouteName="MenuPrincipal">
       <Stack.Screen
         name="MenuPrincipal"
         component={MenuScreen}
+        options={{ headerShown: false }} // Oculta el header en la pantalla de PacienteStack
       />
       <Stack.Screen
         name="PacienteStack"

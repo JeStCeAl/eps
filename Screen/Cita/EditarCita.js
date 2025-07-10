@@ -164,7 +164,7 @@ export default function EditarCita() {
           style={styles.input}
           value={hora}
           onChangeText={setHora}
-          placeholder="HH:MM AM/PM"
+          placeholder="HH:MM (24h format)"
         />
       </View>
 

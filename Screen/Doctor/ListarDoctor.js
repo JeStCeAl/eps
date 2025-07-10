@@ -3,10 +3,9 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Alert,
-  ActivityIndicator,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,8 +25,16 @@ export default function ListarDoctorScreen() {
     setLoading(true);
     try {
       const result = await listarDoctor();
+      console.log("Doctores recibidos:", result.data); // <-- Para depuración
       if (result.success) {
-        setDoctor(result.data);
+        const doctoresFormateados = result.data.map((d) => ({
+          ...d,
+          nombre: d.nombre ?? "No disponible",
+          apellido: d.apellido ?? "No disponible",
+          especialidad: d.especialidad?.nombre ?? "Especialidad no asignada",
+          consultorio: d.consultorio?.numero ?? "Consultorio no asignado",
+        }));
+        setDoctor(doctoresFormateados);
       } else {
         Alert.alert(
           "Error",
@@ -53,11 +60,12 @@ export default function ListarDoctorScreen() {
   const handleCrear = () => {
     navigation.navigate("EditarDoctor");
   };
+
   const handleView = (doctor) => {
     navigation.navigate("DetalleDoctor", { doctor });
   };
+
   const handleEliminar = (id) => {
-    // Implement delete functionality
     Alert.alert("Eliminar Doctor", "¿Estas seguro de eliminar este doctor?", [
       { text: "Cancelar", style: "cancel" },
       {
@@ -67,11 +75,9 @@ export default function ListarDoctorScreen() {
           try {
             const result = await eliminarDoctor(id);
             if (result.success) {
-              // setPacientes(pacientes.filter((p) => p.id !== id));
-              // otra funcion para listar
-              handlePacientes();
+              handleDoctores();
             } else {
-              Alert.alert("Error", result.message || "No se pudo eliminar el ");
+              Alert.alert("Error", result.message || "No se pudo eliminar el doctor");
             }
           } catch (error) {
             Alert.alert("Error", "No se pudo eliminar el doctor");
@@ -88,6 +94,7 @@ export default function ListarDoctorScreen() {
       </View>
     );
   }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Listado de Doctores</Text>
@@ -108,7 +115,7 @@ export default function ListarDoctorScreen() {
         />
       ) : (
         <View style={styles.emptyContainer}>
-          <Text>No hay pacientes registrados</Text>
+          <Text>No hay doctores registrados</Text>
         </View>
       )}
       <TouchableOpacity style={styles.addButton} onPress={handleCrear}>
@@ -133,6 +140,15 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   addButton: {
     position: "absolute",
