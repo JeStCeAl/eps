@@ -64,9 +64,7 @@ export default function ListarConsultorioScreen() {
     navigation.navigate("EditarConsultorio");
   };
 
-  const handleView = (consultorio) => {
-    navigation.navigate("DetalleConsultorio", { consultorio });
-  };
+
 
   const handleEliminar = async (id) => {
     Alert.alert(
@@ -116,7 +114,6 @@ export default function ListarConsultorioScreen() {
             consultorio={item}
             onDelete={() => handleEliminar(item.id)}
             onEdit={() => handleEditar(item)}
-            onView={() => handleView(item)}
           />
         )}
         ListEmptyComponent={
