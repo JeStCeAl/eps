@@ -1,3 +1,4 @@
+// Importación de módulos y componentes necesarios
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -9,67 +10,72 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { crearCita, editarCita } from "../../src/Services/CitasService";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { listarDoctor } from "../../src/Services/DoctorService";
-import { listarPaciente } from "../../src/Services/ActividadService";
+import { Picker } from "@react-native-picker/picker"; // Selector para doctores y pacientes
+import { crearCita, editarCita } from "../../src/Services/CitasService"; // Funciones de API
+import { useNavigation, useRoute } from "@react-navigation/native"; // Hook de navegación
+import { listarDoctor } from "../../src/Services/DoctorService"; // Servicio para listar doctores
+import { listarPaciente } from "../../src/Services/ActividadService"; // Servicio para listar pacientes
 
+// Componente funcional para crear o editar una cita
 export default function EditarCita() {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const cita = route.params?.cita;
+  const navigation = useNavigation(); // Navegación entre pantallas
+  const route = useRoute(); // Acceso a parámetros de ruta
+  const cita = route.params?.cita; // Datos de la cita (si se está editando)
 
+  // Estados para los campos del formulario
   const [fecha, setFecha] = useState(cita?.fecha || "");
   const [hora, setHora] = useState(cita?.hora || "");
   const [doctor_id, setDoctorId] = useState(cita?.doctor_id || "");
   const [paciente_id, setPacienteId] = useState(cita?.paciente_id || "");
+
+  // Estados para cargar listas desde la API
   const [doctores, setDoctores] = useState([]);
   const [pacientes, setPacientes] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado de carga
 
+  // Cargar lista de doctores desde el backend al montar el componente
   useEffect(() => {
     const cargarDoctores = async () => {
       const result = await listarDoctor();
       if (result.success) {
         setDoctores(result.data);
       } else {
-        Alert.alert(
-          "Error",
-          result.message || "No se pudieron cargar los doctores"
-        );
+        Alert.alert("Error", result.message || "No se pudieron cargar los doctores");
       }
     };
     cargarDoctores();
   }, []);
 
+  // Cargar lista de pacientes desde el backend al montar el componente
   useEffect(() => {
     const cargarPacientes = async () => {
       const result = await listarPaciente();
       if (result.success) {
         setPacientes(result.data);
       } else {
-        Alert.alert(
-          "Error",
-          result.message || "No se pudieron cargar los pacientes"
-        );
+        Alert.alert("Error", result.message || "No se pudieron cargar los pacientes");
       }
     };
     cargarPacientes();
   }, []);
 
+  // Verifica si se está editando una cita existente
   const esEdicion = !!cita;
 
+  // Función para guardar o editar una cita
   const handleGuardar = async () => {
+    // Validación básica
     if (!fecha || !hora || !doctor_id || !paciente_id) {
       Alert.alert("Error", "Por favor completa todos los campos");
       return;
     }
 
-    setLoading(true);
+    setLoading(true); // Activa indicador de carga
 
     try {
       let result;
+
+      // Si es edición, actualiza la cita
       if (esEdicion) {
         result = await editarCita(cita.id, {
           fecha,
@@ -78,6 +84,7 @@ export default function EditarCita() {
           paciente_id: parseInt(paciente_id),
         });
       } else {
+        // Si es nueva, crea la cita
         result = await crearCita({
           fecha,
           hora,
@@ -86,15 +93,15 @@ export default function EditarCita() {
         });
       }
 
+      // Si la operación fue exitosa
       if (result?.success) {
-        Alert.alert(
-          "Éxito",
-          `Cita ${esEdicion ? "editada" : "creada"} correctamente`
-        );
-        navigation.goBack();
+        Alert.alert("Éxito", `Cita ${esEdicion ? "editada" : "creada"} correctamente`);
+        navigation.goBack(); // Regresa a la pantalla anterior
       } else {
+        // Manejo de errores del backend
         let errorMsg = "No se pudo guardar la cita";
 
+        // Si el backend devuelve errores por campo
         if (typeof result.message === "object") {
           errorMsg = Object.entries(result.message)
             .map(([key, val]) => `${key}: ${val.join(", ")}`)
@@ -108,16 +115,19 @@ export default function EditarCita() {
     } catch (error) {
       Alert.alert("Error", "No se pudo guardar la cita");
     } finally {
-      setLoading(false);
+      setLoading(false); // Desactiva el indicador de carga
     }
   };
 
+  // Interfaz del formulario
   return (
     <View style={styles.container}>
+      {/* Título dinámico según acción */}
       <Text style={styles.title}>
         {esEdicion ? "Editar Cita" : "Nueva Cita"}
       </Text>
 
+      {/* Selector de doctor */}
       <Picker
         selectedValue={doctor_id}
         onValueChange={(itemValue) => setDoctorId(itemValue)}
@@ -133,6 +143,7 @@ export default function EditarCita() {
         ))}
       </Picker>
 
+      {/* Selector de paciente */}
       <Picker
         selectedValue={paciente_id}
         onValueChange={(itemValue) => setPacienteId(itemValue)}
@@ -148,6 +159,7 @@ export default function EditarCita() {
         ))}
       </Picker>
 
+      {/* Campo: Fecha */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Fecha:</Text>
         <TextInput
@@ -158,6 +170,7 @@ export default function EditarCita() {
         />
       </View>
 
+      {/* Campo: Hora */}
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Hora:</Text>
         <TextInput
@@ -168,6 +181,7 @@ export default function EditarCita() {
         />
       </View>
 
+      {/* Botón para guardar o editar */}
       <TouchableOpacity
         style={styles.button}
         onPress={handleGuardar}
@@ -185,6 +199,7 @@ export default function EditarCita() {
   );
 }
 
+// Estilos del componente
 const styles = StyleSheet.create({
   container: {
     flex: 1,

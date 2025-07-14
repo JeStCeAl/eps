@@ -11,22 +11,21 @@ import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import CitasComponent from "../../Components/CitasComponent";
 import { useNavigation } from "@react-navigation/native";
-import {
-  listarCita,
-  eliminarCita,
-} from "../../src/Services/CitasService";
+import { listarCita, eliminarCita } from "../../src/Services/CitasService";
 
+// Pantalla para listar, crear, editar, ver y eliminar citas médicas
 export default function ListarCitaScreen() {
-  const [citas, setCitas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
+  const [citas, setCitas] = useState([]); // Estado para almacenar las citas
+  const [loading, setLoading] = useState(true); // Estado para mostrar indicador de carga
+  const navigation = useNavigation(); // Hook para manejar la navegación
 
+  // Función para cargar citas desde el servicio
   const cargarCitas = async () => {
     setLoading(true);
     try {
-      const result = await listarCita();
+      const result = await listarCita(); // Llamada a la API para listar citas
       if (result.success) {
-        setCitas(result.data);
+        setCitas(result.data); // Actualiza el estado con las citas recibidas
       } else {
         Alert.alert(
           "Error",
@@ -36,27 +35,32 @@ export default function ListarCitaScreen() {
     } catch (error) {
       Alert.alert("Error", "No se pudieron cargar las citas");
     } finally {
-      setLoading(false);
+      setLoading(false); // Oculta el indicador de carga
     }
   };
 
+  // Cargar citas cada vez que se enfoque la pantalla
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", cargarCitas);
-    return unsubscribe;
+    return unsubscribe; // Limpieza del listener
   }, [navigation]);
 
+  // Navegar a la pantalla de edición con los datos de la cita
   const handleEditar = (cita) => {
     navigation.navigate("EditarCita", { cita });
   };
 
+  // Navegar para crear una nueva cita (sin pasar datos)
   const handleCrear = () => {
     navigation.navigate("EditarCita");
   };
 
+  // Navegar a la pantalla de detalle de una cita
   const handleView = (cita) => {
     navigation.navigate("DetalleCita", { cita });
   };
 
+  // Confirmar y eliminar una cita por su ID
   const handleEliminar = (id) => {
     Alert.alert("Eliminar Cita", "¿Estás seguro de eliminar esta cita?", [
       { text: "Cancelar", style: "cancel" },
@@ -65,8 +69,9 @@ export default function ListarCitaScreen() {
         style: "destructive",
         onPress: async () => {
           try {
-            const result = await eliminarCita(id);
+            const result = await eliminarCita(id); // Llamada a la API
             if (result.success) {
+              // Elimina la cita del estado local si fue exitoso
               setCitas((prev) => prev.filter((c) => c.id !== id));
             } else {
               Alert.alert(
@@ -82,6 +87,7 @@ export default function ListarCitaScreen() {
     ]);
   };
 
+  // Mostrar un indicador de carga mientras se cargan las citas
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -90,10 +96,12 @@ export default function ListarCitaScreen() {
     );
   }
 
+  // Render de la pantalla principal
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Listado de Citas</Text>
 
+      {/* Lista de citas si hay datos */}
       {citas.length > 0 ? (
         <FlatList
           style={styles.listContainer}
@@ -110,11 +118,13 @@ export default function ListarCitaScreen() {
           )}
         />
       ) : (
+        // Mostrar mensaje si no hay citas
         <View style={styles.emptyContainer}>
           <Text>No hay citas registradas</Text>
         </View>
       )}
 
+      {/* Botón flotante para crear nueva cita */}
       <TouchableOpacity style={styles.addButton} onPress={handleCrear}>
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
@@ -122,6 +132,7 @@ export default function ListarCitaScreen() {
   );
 }
 
+// Estilos de la pantalla
 const styles = StyleSheet.create({
   container: {
     flex: 1,

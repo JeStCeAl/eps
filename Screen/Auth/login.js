@@ -11,9 +11,12 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  StatusBar,
 } from "react-native";
 import BottonComponent from "../../Components/BotonComponent";
 import { loginUser } from "../../src/Services/AuthService";
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -21,32 +24,37 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
+  const [secureEntry, setSecureEntry] = useState(true);
 
   const handleLogin = async () => {
+    // Validación básica de campos
+    if (!email.trim() || !password.trim()) {
+      Alert.alert(
+        "Campos requeridos",
+        "Por favor ingrese su correo y contraseña"
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
       const result = await loginUser(email, password);
+
       if (result.success) {
-        Alert.alert("Éxito", "Inicio de sesión exitoso", [
-          {
-            text: "OK",
-            onPress: () => {
-              console.log("Login exitoso, redirigiendo automaticamente...");
-            },
-          },
-        ]);
+        Alert.alert("EXITO", "inicio"); // Redirigir al dashboard principal
       } else {
         Alert.alert(
-          "Error de Login",
-          result.message || "Ocurrio un error al iniciar sesión."
+          "Acceso denegado",
+          result.message ||
+            "Credenciales incorrectas. Por favor verifique sus datos."
         );
       }
     } catch (error) {
-      console.error("Error inesperado al iniciar sesión:", error);
+      console.error("Error en login:", error);
       Alert.alert(
-        "Error",
-        "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde."
+        "Error de conexión",
+        "No pudimos conectarnos al servidor. Por favor revise su conexión a internet."
       );
     } finally {
       setLoading(false);
@@ -54,84 +62,131 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.keyboardAvoidingContainer}
+    <LinearGradient
+      colors={["#0073B1", "#00A8E8"]}
+      style={styles.gradientContainer}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
+      <StatusBar barStyle="light-content" backgroundColor="#0073B1" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingContainer}
       >
-        <View style={styles.container}>
-          {/* Logo o imagen */}
-          <Image
-            source={require("../../assets/icon.png")} // Reemplaza con tu propia imagen
-            style={styles.logo}
-            resizeMode="contain"
-          />
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            {/* Logo y encabezado */}
+            <View style={styles.logoContainer}>
+              <Image
+                source={require("../../assets/imgen.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              <Text style={styles.welcomeText}>Sistema de Salud Integral</Text>
+            </View>
 
-          <Text style={styles.title}>Bienvenido</Text>
-          <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+            {/* Tarjeta de formulario */}
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Iniciar Sesión</Text>
 
-          {/* Formulario */}
-          <View style={styles.formContainer}>
-            <Text style={styles.label}>Correo Electrónico</Text>
-            <TextInput
-              style={[styles.input, isFocusedEmail && styles.inputFocused]}
-              placeholder="tu@email.com"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              editable={!loading}
-              onFocus={() => setIsFocusedEmail(true)}
-              onBlur={() => setIsFocusedEmail(false)}
-            />
+              {/* Campo de email */}
+              <View style={styles.inputContainer}>
+                <MaterialIcons
+                  name="email"
+                  size={20}
+                  color="#0073B1"
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={[styles.input, isFocusedEmail && styles.inputFocused]}
+                  placeholder="Correo electrónico"
+                  placeholderTextColor="#95a5a6"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  editable={!loading}
+                  onFocus={() => setIsFocusedEmail(true)}
+                  onBlur={() => setIsFocusedEmail(false)}
+                />
+              </View>
 
-            <Text style={styles.label}>Contraseña</Text>
-            <TextInput
-              style={[styles.input, isFocusedPassword && styles.inputFocused]}
-              placeholder="••••••••"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              editable={!loading}
-              onFocus={() => setIsFocusedPassword(true)}
-              onBlur={() => setIsFocusedPassword(false)}
-            />
+              {/* Campo de contraseña */}
+              <View style={styles.inputContainer}>
+                <MaterialIcons
+                  name="lock"
+                  size={20}
+                  color="#0073B1"
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={[
+                    styles.input,
+                    isFocusedPassword && styles.inputFocused,
+                  ]}
+                  placeholder="Contraseña"
+                  placeholderTextColor="#95a5a6"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={secureEntry}
+                  editable={!loading}
+                  onFocus={() => setIsFocusedPassword(true)}
+                  onBlur={() => setIsFocusedPassword(false)}
+                />
+                <TouchableOpacity
+                  style={styles.eyeIcon}
+                  onPress={() => setSecureEntry(!secureEntry)}
+                >
+                  <MaterialIcons
+                    name={secureEntry ? "visibility-off" : "visibility"}
+                    size={20}
+                    color="#95a5a6"
+                  />
+                </TouchableOpacity>
+              </View>
 
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={styles.forgotPasswordText}>
-                ¿Olvidaste tu contraseña?
-              </Text>
-            </TouchableOpacity>
+              {/* Enlace olvidé contraseña */}
+              <TouchableOpacity
+                style={styles.forgotPassword}
+                onPress={() => navigation.navigate("RecuperarContraseña")}
+              >
+                <Text style={styles.forgotPasswordText}>
+                  ¿Olvidaste tu contraseña?
+                </Text>
+              </TouchableOpacity>
 
-            <BottonComponent
-              title={"Ingresar"}
-              onPress={handleLogin}
-              disabled={loading}
-              loading={loading}
-              style={styles.loginButton}
-              textStyle={styles.buttonText}
-            />
+              {/* Botón de ingreso */}
+              <BottonComponent
+                title={loading ? "Ingresando..." : "Ingresar"}
+                onPress={handleLogin}
+                disabled={loading}
+                loading={loading}
+                style={styles.loginButton}
+                textStyle={styles.buttonText}
+              />
+            </View>
+
+            {/* Enlace a registro */}
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>¿No tienes una cuenta?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Registro")}>
+                <Text style={styles.registerLink}>Regístrate aquí</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          {/* Registro */}
-          <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>¿No tienes una cuenta?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Registro")}>
-              <Text style={styles.registerLink}>Regístrate</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
+  gradientContainer: {
+    flex: 1,
+  },
   keyboardAvoidingContainer: {
     flex: 1,
   },
@@ -144,72 +199,81 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 25,
-    backgroundColor: "#fff",
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 30,
   },
   logo: {
-    width: width * 0.4,
-    height: width * 0.4,
-    marginBottom: 30,
-    borderCurve: "circle",
-    borderRadius: 100,
+    width: width * 0.5,
+    height: width * 0.3,
+    marginBottom: 15,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 5,
+  welcomeText: {
+    fontSize: 18,
+    color: "white",
+    fontWeight: "500",
+    textAlign: "center",
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
-  },
-  formContainer: {
+  card: {
     width: "100%",
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
     marginBottom: 20,
   },
-  label: {
-    fontSize: 14,
-    color: "#444",
-    marginBottom: 8,
-    fontWeight: "500",
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#2c3e50",
+    marginBottom: 25,
+    textAlign: "center",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ecf0f1",
+    marginBottom: 25,
+    paddingBottom: 5,
+  },
+  inputIcon: {
+    marginRight: 10,
   },
   input: {
-    width: "100%",
-    height: 50,
-    borderColor: "#e0e0e0",
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    backgroundColor: "#f9f9f9",
+    flex: 1,
+    height: 40,
+    color: "#2c3e50",
     fontSize: 16,
   },
   inputFocused: {
-    borderColor: "#4a90e2",
-    backgroundColor: "#fff",
-    shadowColor: "#4a90e2",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
+    borderBottomColor: "#0073B1",
+  },
+  eyeIcon: {
+    padding: 5,
   },
   forgotPassword: {
     alignSelf: "flex-end",
     marginBottom: 25,
   },
   forgotPasswordText: {
-    color: "#4a90e2",
+    color: "#0073B1",
     fontSize: 14,
+    fontWeight: "500",
   },
   loginButton: {
-    backgroundColor: "#4a90e2",
-    borderRadius: 10,
+    backgroundColor: "#0073B1",
+    borderRadius: 8,
     height: 50,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#4a90e2",
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: "#0073B1",
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 3,
@@ -221,14 +285,26 @@ const styles = StyleSheet.create({
   },
   registerContainer: {
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 15,
   },
   registerText: {
-    color: "#666",
+    color: "white",
     marginRight: 5,
   },
   registerLink: {
-    color: "#4a90e2",
+    color: "white",
     fontWeight: "bold",
+    textDecorationLine: "underline",
+  },
+  versionText: {
+    color: "rgba(255,255,255,0.7)",
+    fontSize: 12,
+    marginTop: 20,
+  },
+  copyrightText: {
+    color: "rgba(255,255,255,0.5)",
+    fontSize: 10,
+    marginTop: 5,
+    textAlign: "center",
   },
 });
